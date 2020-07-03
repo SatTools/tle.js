@@ -707,6 +707,62 @@ export function getGroundTracksSync({
 	return orbitLatLons;
 }
 
+export function getGroundTracksSync3D({
+	tle,
+	stepMS = 1000,
+	optionalTimeMS = Date.now(), // TODO: change to startTimeMS for consistency
+	isLngLatFormat = true
+}) {
+	const parsedTLE = parseTLE(tle);
+	const { tle: tleArr } = parsedTLE;
+
+	const orbitTimeMS = getAverageOrbitTimeMS(tleArr);
+	const curOrbitStartMS = getLastAntemeridianCrossingTimeMS(
+		parsedTLE,
+		optionalTimeMS
+	);
+
+	const foundCrossing = curOrbitStartMS !== -1;
+	if (!foundCrossing) {
+		// Geosync or unusual orbit, so just return a partial orbit track.
+
+		const partialGroundTrack = getOrbitTrackSync({
+			tle: parsedTLE,
+			startTimeMS: optionalTimeMS,
+			stepMS: _MS_IN_A_MINUTE,
+			maxTimeMS: _MS_IN_A_DAY / 4
+		});
+
+		return partialGroundTrack;
+	}
+
+	const lastOrbitStartMS = getLastAntemeridianCrossingTimeMS(
+		parsedTLE,
+		curOrbitStartMS - 10000
+	);
+	const nextOrbitStartMS = getLastAntemeridianCrossingTimeMS(
+		parsedTLE,
+		curOrbitStartMS + orbitTimeMS + 1000 * 60 * 30
+	);
+
+	const orbitStartTimes = [
+		lastOrbitStartMS,
+		curOrbitStartMS,
+		nextOrbitStartMS
+	];
+
+	const orbitLatLons = orbitStartTimes.map(orbitStartMS => {
+		return getOrbitTrackSync3D({
+			tle: parsedTLE,
+			startTimeMS: orbitStartMS,
+			stepMS,
+			isLngLatFormat
+		});
+	});
+
+	return orbitLatLons;
+}
+
 /**
  * Determes the compass bearing from the perspective of the satellite.  Useful for 3D / pitched
  * map perspectives.
