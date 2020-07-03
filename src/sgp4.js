@@ -501,7 +501,7 @@ export function getOrbitTrackSync3D({
 		const curLngLat = getLngLat(tleArr, curTimeMS);
 
 		// Calculate satellite height in meters
-		const satelliteHeight = getSatelliteInfo(rawTLE, curTimeMS, curLat, curLng, 0).height * 1000;
+		const satelliteHeight = getSatelliteInfo(rawTLE, curTimeMS, curLngLat[0], curLngLat[1], 0).height * 1000;
 		curLngLat.push(satelliteHeight);
 
 		const [curLng, curLat, satHeight] = curLngLat;
