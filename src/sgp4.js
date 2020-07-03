@@ -477,6 +477,56 @@ export function getOrbitTrackSync({
 	return coords;
 }
 
+export function getOrbitTrackSync3D({
+	tle,
+	startTimeMS = Date.now(),
+	stepMS = 1000,
+	maxTimeMS = 6000000,
+	isLngLatFormat = true
+}) {
+	const rawTLE = tle;
+	const { tle: tleArr } = parseTLE(tle);
+
+	const startS = (startTimeMS / 1000).toFixed();
+	const cacheKey = `${tleArr[0]}-${startS}-${stepMS}-${isLngLatFormat}`;
+	if (cachedOrbitTracks[cacheKey]) {
+		return cachedOrbitTracks[cacheKey];
+	}
+
+	let isDone = false;
+	let coords = [];
+	let lastLng;
+	let curTimeMS = startTimeMS;
+	while (!isDone) {
+		const curLngLat = getLngLat(tleArr, curTimeMS);
+
+		// Calculate satellite height in meters
+		const satelliteHeight = getSatelliteInfo(rawTLE, curTimeMS, curLat, curLng, 0).height * 1000;
+		curLngLat.push(satelliteHeight);
+
+		const [curLng, curLat, satHeight] = curLngLat;
+
+		const doesCrossAntemeridian = _crossesAntemeridian(lastLng, curLng);
+		const doesExceedTime = maxTimeMS && curTimeMS - startTimeMS > maxTimeMS;
+		isDone = doesCrossAntemeridian || doesExceedTime;
+
+		if (isDone) break;
+
+		if (isLngLatFormat) {
+			coords.push(curLngLat);
+		} else {
+			coords.push([curLat, curLng, satHeight]);
+		}
+
+		lastLng = curLng;
+		curTimeMS += stepMS;
+	}
+
+	cachedOrbitTracks[cacheKey] = coords;
+
+	return coords;
+}
+
 /**
  * Calculates three orbit arrays of latitude/longitude pairs.
  * TODO: just calculate future orbits
