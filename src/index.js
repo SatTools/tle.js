@@ -3,6 +3,7 @@ export {
 	getCacheSizes,
 	getGroundTracks,
 	getGroundTracksSync,
+	getGroundTracksSync3D,
 	getLastAntemeridianCrossingTimeMS,
 	getLatLngObj,
 	getLngLatAtEpoch,
