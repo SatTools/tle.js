@@ -1097,9 +1097,10 @@ function getCacheSizes() {
  */
 
 function clearCache() {
-  caches.forEach(cache => {
-    caches[cache] = {};
+  caches.forEach((_, index) => {
+    caches[index] = {};
   });
+  cachedSatelliteInfo = cachedAntemeridianCrossings = cachedOrbitTracks = cachedGroundTrack = {};
 }
 /**
  * Determines satellite position and look angles from an earth observer.
@@ -1541,6 +1542,7 @@ function getOrbitTrackSync3D({
   }
 
   cachedOrbitTracks[cacheKey] = coords;
+  clearCache();
   return coords;
 }
 /**
@@ -1704,7 +1706,7 @@ function getGroundTracksSync3D({
 
   if (!foundCrossing) {
     // Geosync or unusual orbit, so just return a partial orbit track.
-    const partialGroundTrack = getOrbitTrackSync({
+    const partialGroundTrack = getOrbitTrackSync3D({
       tle: parsedTLE,
       startTimeMS: optionalTimeMS,
       stepMS: _MS_IN_A_MINUTE,
