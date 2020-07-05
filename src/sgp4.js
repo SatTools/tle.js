@@ -36,7 +36,7 @@ let cachedSatelliteInfo = {};
 let cachedAntemeridianCrossings = {};
 let cachedOrbitTracks = {};
 let cachedGroundTrack = {};
-const caches = [
+let caches = [
 	cachedSatelliteInfo,
 	cachedAntemeridianCrossings,
 	cachedOrbitTracks,
