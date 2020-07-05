@@ -1147,15 +1147,7 @@ function getSatelliteInfo(rawTLE, rawTimestamp, observerLat, observerLng, observ
   };
   const obsLat = observerLat || defaultObserverPosition.lat;
   const obsLng = observerLng || defaultObserverPosition.lng;
-  const obsHeight = observerHeight || defaultObserverPosition.height; // Memoization
-
-  const cacheKey = `${tle[0]}-${timestamp}-${observerLat}-${observerLng}
--${observerHeight}`;
-
-  if (cachedSatelliteInfo[cacheKey]) {
-    return cachedSatelliteInfo[cacheKey];
-  } // Initialize a satellite record
-
+  const obsHeight = observerHeight || defaultObserverPosition.height; // Initialize a satellite record
 
   const satrec = twoline2satrec(tle[0], tle[1]);
 
@@ -1204,9 +1196,7 @@ function getSatelliteInfo(rawTLE, rawTimestamp, observerLat, observerLng, observ
     range: rangeSat,
     height,
     velocity: velocityKmS
-  }; // Memoization
-
-  cachedSatelliteInfo[cacheKey] = output;
+  };
   return output;
 }
 /**
@@ -1502,13 +1492,6 @@ function getOrbitTrackSync3D({
   const {
     tle: tleArr
   } = parseTLE(tle);
-  const startS = (startTimeMS / 1000).toFixed();
-  const cacheKey = `${tleArr[0]}-${startS}-${stepMS}-${isLngLatFormat}`;
-
-  if (cachedOrbitTracks[cacheKey]) {
-    return cachedOrbitTracks[cacheKey];
-  }
-
   let isDone = false;
   let coords = [];
   let lastLng;
@@ -1537,8 +1520,6 @@ function getOrbitTrackSync3D({
     curTimeMS += stepMS;
   }
 
-  cachedOrbitTracks[cacheKey] = coords;
-  clearCache();
   return coords;
 }
 /**
