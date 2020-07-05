@@ -1088,7 +1088,7 @@ let cachedSatelliteInfo = {};
 let cachedAntemeridianCrossings = {};
 let cachedOrbitTracks = {};
 let cachedGroundTrack = {};
-const caches = [cachedSatelliteInfo, cachedAntemeridianCrossings, cachedOrbitTracks, cachedGroundTrack];
+let caches = [cachedSatelliteInfo, cachedAntemeridianCrossings, cachedOrbitTracks, cachedGroundTrack];
 function getCacheSizes() {
   return caches.map(_getObjLength);
 }
