@@ -51,9 +51,10 @@ export function getCacheSizes() {
  * Provides a way to clear up memory for long-running apps.
  */
 export function clearCache() {
-	caches.forEach(cache => {
-		caches[cache] = {};
+	caches.forEach((_, index) => {
+		caches[index] = {};
 	});
+	cachedSatelliteInfo = cachedAntemeridianCrossings = cachedOrbitTracks = cachedGroundTrack = {};
 }
 
 /**
@@ -523,6 +524,8 @@ export function getOrbitTrackSync3D({
 	}
 
 	cachedOrbitTracks[cacheKey] = coords;
+
+	clearCache();
 
 	return coords;
 }
